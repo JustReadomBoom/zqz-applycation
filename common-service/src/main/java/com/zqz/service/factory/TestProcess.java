@@ -1,5 +1,7 @@
 package com.zqz.service.factory;
 
+import com.zqz.service.enums.ProcessEnum;
+
 /**
  * @Author: zqz
  * @Description:
@@ -16,10 +18,14 @@ public class TestProcess {
 
         //策略模式
 //        OrderProcess process = new OrderProcess("order");
-        RefundProcess process = new RefundProcess("refund");
-        StrategyContext context = new StrategyContext(process);
-        String execute = context.execute();
-        System.out.println(execute);
+//        RefundProcess process = new RefundProcess("refund");
+//        StrategyContext context = new StrategyContext(process);
+//        String execute = context.execute();
+//        System.out.println(execute);
+
+        //枚举类型
+        System.out.println(ProcessEnum.valueOf("REFUND_TYPE").process());
+        System.out.println(ProcessEnum.valueOf("ORDER_TYPE").process());
     }
 
 
