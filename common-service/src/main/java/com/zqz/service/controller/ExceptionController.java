@@ -2,6 +2,8 @@ package com.zqz.service.controller;
 
 import com.zqz.service.exception.ProcessException;
 import com.zqz.service.exception.ResultBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +25,9 @@ public class ExceptionController {
 
     @GetMapping("/process")
     public ResultBean testProcessException() {
-        throw new ProcessException("Process exception here...");
+        String a = null;
+        Assert.notNull(a, "a不能为空，异常");
+//        throw new ProcessException("Process exception here...");
+        return null;
     }
 }

@@ -9,6 +9,7 @@
         <module>common-provider</module>
         <module>common-consumer</module>
         <module>common-service</module>
+        <module>common-dao</module>
     </modules>
 
     <groupId>com.zqz</groupId>

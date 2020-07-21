@@ -1,6 +1,7 @@
 package com.zqz.service.factory;
 
 import com.zqz.service.enums.ProcessEnum;
+import org.springframework.util.Assert;
 
 /**
  * @Author: zqz
@@ -26,6 +27,10 @@ public class TestProcess {
         //枚举类型
         System.out.println(ProcessEnum.valueOf("REFUND_TYPE").process());
         System.out.println(ProcessEnum.valueOf("ORDER_TYPE").process());
+
+        String a = null;
+
+        Assert.notNull(a, "a 不能为空");
     }
 
 

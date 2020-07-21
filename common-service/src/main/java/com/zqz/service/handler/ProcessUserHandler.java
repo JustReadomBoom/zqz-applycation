@@ -24,7 +24,7 @@ public class ProcessUserHandler implements InitializingBean, DisposableBean {
 
 
     public void afterPropertiesSet() throws Exception {
-        executor.scheduleWithFixedDelay(new ProcessUserTask(queue), 1, 3, TimeUnit.SECONDS);
+        executor.scheduleWithFixedDelay(new ProcessUserTask(queue), 1, 20, TimeUnit.SECONDS);
     }
 
 
