@@ -1,6 +1,7 @@
 package com.zqz.service.controller;
 
 import com.zqz.service.biz.GoodsStoreBizService;
+import com.zqz.service.transaction.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,8 @@ public class GoodsStoreController {
 
     @Autowired
     private GoodsStoreBizService goodsStoreBizService;
+    @Autowired
+    private TransactionService transactionService;
 
     @GetMapping("test")
     public ModelAndView stepOne(Model model) {
@@ -28,5 +31,12 @@ public class GoodsStoreController {
     @ResponseBody
     public String secKill(@RequestParam(value = "code", required = true) String code, @RequestParam(value = "num", required = true) Integer num) {
         return goodsStoreBizService.updateGoodsStore(code, num);
+    }
+
+
+    @GetMapping("tx")
+    @ResponseBody
+    public void testTransaction(@RequestParam("flag") String flag){
+        transactionService.testTransaction(flag);
     }
 }
