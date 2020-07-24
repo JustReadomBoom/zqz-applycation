@@ -8,6 +8,13 @@
         <module>common-dao</module>
     </modules>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.6.RELEASE</version>
+        <relativePath/>
+    </parent>
+
     <groupId>com.zqz</groupId>
     <artifactId>zqz-root</artifactId>
     <packaging>pom</packaging>
