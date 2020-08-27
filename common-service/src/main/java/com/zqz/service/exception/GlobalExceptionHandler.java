@@ -1,5 +1,8 @@
 package com.zqz.service.exception;
 
+import com.zqz.service.valid.ParamValidException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @ResponseBody
 public class GlobalExceptionHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     /**
      * @Author: zqz
      * @Description: 通用异常
@@ -44,4 +48,13 @@ public class GlobalExceptionHandler {
     private ResultBean handlerException(HttpStatus httpStatus, Throwable e) {
         return new ResultBean(httpStatus, e.getMessage());
     }
+
+
+    @ExceptionHandler(ParamValidException.class)
+    public ResultBean paramValidException(ParamValidException e){
+        String errorMsg = String.format("参数错误[%s]", e.getLocalizedMessage());
+        log.error(errorMsg);
+        return new ResultBean(HttpStatus.BAD_REQUEST, errorMsg);
+    }
+
 }

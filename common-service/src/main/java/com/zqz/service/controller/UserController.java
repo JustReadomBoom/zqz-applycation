@@ -21,6 +21,8 @@ public class UserController {
     @Autowired
     private LocalQueue queue;
 
+
+
     @GetMapping("/add")
     public void addUser() {
         Random random = new Random();
@@ -32,10 +34,13 @@ public class UserController {
             user.setAddress(getRandomString(10));
             queue.add(user);
         }
+
+
     }
 
 
     public static String getRandomString(int length) {
+
         //定义一个字符串（A-Z，a-z，0-9）即62位；
         String str = "zxcvbnmlkjhgfdsaqwertyuiopQWERTYUIOPASDFGHJKLZXCVBNM1234567890";
         //由Random生成随机数
@@ -51,6 +56,9 @@ public class UserController {
         //将承载的字符转换成字符串
         return sb.toString();
     }
+
+
+
 
 
 }

@@ -1,12 +1,10 @@
 package com.zqz.service.controller;
 
-import com.zqz.service.exception.ProcessException;
 import com.zqz.service.exception.ResultBean;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.zqz.service.model.UserInfo;
+import com.zqz.service.valid.ParamValid;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author: zqz
@@ -23,11 +21,16 @@ public class ExceptionController {
         throw new RuntimeException("Common exception here...");
     }
 
-    @GetMapping("/process")
+    @GetMapping("/processes")
     public ResultBean testProcessException() {
         String a = null;
         Assert.notNull(a, "a不能为空，异常");
 //        throw new ProcessException("Process exception here...");
         return null;
+    }
+
+    @PostMapping("/param")
+    public Object testParam(@RequestBody @ParamValid UserInfo userInfo){
+        return userInfo.toString();
     }
 }

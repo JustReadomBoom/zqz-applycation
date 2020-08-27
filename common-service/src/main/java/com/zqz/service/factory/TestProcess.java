@@ -13,14 +13,14 @@ public class TestProcess {
     public static void main(String[] args) {
         //工场模式
 //        String type = "refund";
-//        ProcessService process = ProcessFactory.getProcess(type);
-//        String process1 = process.process();
+//        ProcessService processes = ProcessFactory.getProcess(type);
+//        String process1 = processes.processes();
 //        System.out.println(process1);
 
         //策略模式
-//        OrderProcess process = new OrderProcess("order");
-//        RefundProcess process = new RefundProcess("refund");
-//        StrategyContext context = new StrategyContext(process);
+//        OrderProcess processes = new OrderProcess("order");
+//        RefundProcess processes = new RefundProcess("refund");
+//        StrategyContext context = new StrategyContext(processes);
 //        String execute = context.execute();
 //        System.out.println(execute);
 
