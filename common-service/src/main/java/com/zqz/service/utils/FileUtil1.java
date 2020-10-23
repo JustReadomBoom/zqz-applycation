@@ -260,5 +260,11 @@ public class FileUtil1 {
         }
     }
 
+    public static void main(String[] args) {
+        String filePath = "/Users/zhouqizhi/Desktop/公司资料.txt";
+        String lines = readFileByLines(filePath);
+        log.info("content={}", lines);
+    }
+
 
 }

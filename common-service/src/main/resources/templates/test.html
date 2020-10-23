@@ -19,12 +19,12 @@
             //模拟400个用户抢购
             for (var i = 0; i < 400; i++) {
                 $.post("secKill", json, function (data) {
-                    if (data != "排队人数太多，请稍后再试！") {
+                    if (data !== "排队人数太多，请稍后再试！") {
                         $("#result").append("<br />" + data + "<br />");
                     } else {
                         $("#result").append(data + " ");
                     }
-                    if (data.indexOf("恭喜您，购买成功！") != -1) {
+                    if (data.indexOf("恭喜您，购买成功！") !== -1) {
                         countNum += 2000;
                     }
                     $("#count_num").text("总共卖出：" + countNum);

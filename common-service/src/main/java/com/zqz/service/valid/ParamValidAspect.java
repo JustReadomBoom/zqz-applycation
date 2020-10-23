@@ -40,7 +40,8 @@ public class ParamValidAspect {
      * 第4个*：注解对应的对象，即需要校验的参数体
      * 对于多个controller, 使用||增加
      */
-    @Pointcut(value = "execution(public * com.zqz.service.controller.*.*(@com.zqz.service.valid.ParamValid (*)))")
+//    @Pointcut(value = "execution(public * com.zqz.service.controller.*.*(@com.zqz.service.valid.ParamValid (*)))")
+    @Pointcut(value = "execution(public * com.zqz.service..*.*(@com.zqz.service.valid.ParamValid (*)))")
     public void webLog() {}
 
 
