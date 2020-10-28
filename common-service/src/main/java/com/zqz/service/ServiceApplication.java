@@ -7,6 +7,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.sql.DataSource;
 
@@ -18,7 +20,7 @@ import javax.sql.DataSource;
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.zqz.service"})
 @EnableTransactionManagement
-public class ServiceApplication {
+public class ServiceApplication implements WebMvcConfigurer {
 
     @Bean
     public PlatformTransactionManager txManager(DataSource dataSource){
@@ -27,5 +29,12 @@ public class ServiceApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(ServiceApplication.class, args);
+    }
+
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("doc.html").addResourceLocations("classpath:/META-INF/resources/");
+        registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 }
