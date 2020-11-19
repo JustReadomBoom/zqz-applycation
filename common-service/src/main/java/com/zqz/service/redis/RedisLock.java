@@ -5,8 +5,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,16 +21,19 @@ import java.util.concurrent.TimeUnit;
 public class RedisLock {
     private static final Logger log = LoggerFactory.getLogger(RedisLock.class);
 
-    private static final Long RELEASE_SUCCESS = 1L;
-    private static final String LOCK_SUCCESS = "OK";
-    private static final String SET_IF_NOT_EXIST = "NX";
-    // 当前设置 过期时间单位, EX = seconds; PX = milliseconds
-    private static final String SET_WITH_EXPIRE_TIME = "EX";
-    // if get(key) == value return del(key)
-    private static final String RELEASE_LOCK_SCRIPT = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+    private static final String RELEASE_LOCK_SCRIPT = "if redis.call(\"get\",KEYS[1]) == ARGV[1] then\n" +
+            "    return redis.call(\"del\",KEYS[1])\n" +
+            "else\n" +
+            "    return 0\n" +
+            "end";
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+
+    /**
+     * Lua脚本
+     */
+    public static final DefaultRedisScript<Long> REDIS_SCRIPT = new DefaultRedisScript<>(RELEASE_LOCK_SCRIPT, Long.class);
 
     /**
      * @Author: zqz
@@ -86,28 +92,29 @@ public class RedisLock {
      * 该加锁方法仅针对单实例 Redis 可实现分布式加锁
      * 对于 Redis 集群则无法使用
      * 支持重复，线程安全
-     * @param lockKey   加锁键
-     * @param clientId  加锁客户端唯一标识(采用UUID)
-     * @param seconds   锁过期时间
+     *
+     * @param lockKey 加锁键
+     * @param value   加锁客户端唯一标识(采用UUID)
+     * @param seconds 锁过期时间
      * @return
      */
-    public boolean reqTryLock(String lockKey, String clientId, long seconds) {
-        return stringRedisTemplate.opsForValue().setIfAbsent(lockKey, clientId, seconds, TimeUnit.SECONDS);
+    public boolean reqTryLock(String lockKey, String value, long seconds) {
+        Boolean ifAbsent = stringRedisTemplate.opsForValue().setIfAbsent(lockKey, value, seconds, TimeUnit.SECONDS);
+        if (null != ifAbsent && ifAbsent) {
+            return true;
+        }
+        return false;
     }
 
     /**
      * 与 tryLock 相对应，用作释放锁
+     *
      * @param lockKey
-     * @param clientId
+     * @param value
      * @return
      */
-    public boolean reqReleaseLock(String lockKey, String clientId) {
-        String currentValue = stringRedisTemplate.opsForValue().get(lockKey);
-        if (!StringUtils.isBlank(currentValue) && currentValue.equals(clientId)) {
-            //删除锁状态
-            return stringRedisTemplate.opsForValue().getOperations().delete(lockKey);
-        } else {
-            return false;
-        }
+    public boolean reqReleaseLock(String lockKey, String value) {
+        stringRedisTemplate.execute(REDIS_SCRIPT, Collections.singletonList(lockKey), value);
+        return true;
     }
 }

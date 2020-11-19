@@ -1,6 +1,7 @@
 package com.zqz.service.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.zqz.service.anno.NoRepeatSubmit;
 import com.zqz.service.model.ApiResult;
 import com.zqz.service.model.UserBean;
@@ -11,9 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,19 +37,15 @@ public class SubmitController {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        ApiResult result = new ApiResult(200, "成功", userBean.getUserId());
-        log.info("RESULT=[{}]", JSON.toJSONString(result));
-        return result;
+        return new ApiResult(200, "成功", userBean.getUserId());
     }
 
     @GetMapping("/test2")
     public String test2Submit(){
         String url="http://localhost:7777/submit/test";
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        for(int i=0; i<10; i++){
+        for(int i=0; i<200; i++){
             executorService.submit(() -> {
                 try {
-                    countDownLatch.await();
                     System.out.println("Thread:"+Thread.currentThread().getName()+", time:"+System.currentTimeMillis());
 
                     UserBean bean = new UserBean();
@@ -60,16 +55,16 @@ public class SubmitController {
                     header.put("Authorization", "123456");  //用户唯一标识
 
                     String resp = HttpUtil.postJson(url, header, JSON.toJSONString(bean));
-
-                    System.out.println("RESP:"+Thread.currentThread().getName() + "," + resp);
-
-                } catch (InterruptedException e) {
+                    log.info("线程:[{}]-测试响应结果:[{}]", Thread.currentThread().getName(), resp);
+                    ApiResult apiResult = JSON.toJavaObject(JSON.parseObject(resp), ApiResult.class);
+                    if("成功".equals(apiResult.getMessage())){
+                        log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>成功处理请求<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+                    }
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
         }
-
-        countDownLatch.countDown();
         return "END";
     }
 }

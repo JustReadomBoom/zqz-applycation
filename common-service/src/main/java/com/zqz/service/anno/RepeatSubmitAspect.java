@@ -48,37 +48,30 @@ public class RepeatSubmitAspect {
         String token = request.getHeader("Authorization");
         String path = request.getServletPath();
         String key = getKey(token, path);
-        String clientId = getClientId();
+        String value = getClientId();
 
         boolean isSuccess;
 
-        log.info("Token=[{}], Path=[{}], Key=[{}], ClientId=[{}]", token, path, key, clientId);
         try {
-            isSuccess = redisLock.reqTryLock(key, clientId, lockSeconds);
+            isSuccess = redisLock.reqTryLock(key, value, lockSeconds);
         }catch (Exception e){
             log.error("*****tryLock异常:[{}]", e.getMessage(), e);
             return null;
         }
         if (isSuccess) {
-            log.info("tryLock success, key = [{}], clientId = [{}]", key, clientId);
             // 获取锁成功
             Object result;
-
             try {
                 // 执行进程
                 result = pjp.proceed();
             } finally {
                 // 解锁
-                boolean relase = redisLock.reqReleaseLock(key, clientId);
-                log.info("releaseLock {}, key = [{}], clientId = [{}]", relase ? "success" : "fail", key, clientId);
+                redisLock.reqReleaseLock(key, value);
             }
-
             return result;
-
         } else {
             // 获取锁失败，认为是重复提交的请求
-            log.info("tryLock fail, key = [{}]", key);
-            return new ApiResult(200, "重复请求，请稍后再试", null);
+            return new ApiResult(200, "请求重复，请稍后再试", null);
         }
 
     }

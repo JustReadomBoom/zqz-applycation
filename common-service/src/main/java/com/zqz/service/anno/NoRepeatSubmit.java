@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 public @interface NoRepeatSubmit {
 
     /**
-     * 设置请求锁定时间
+     * 设置请求锁定时间 10s
      * @return
      */
     int lockTime() default 10;
