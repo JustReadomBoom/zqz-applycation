@@ -62,7 +62,7 @@ public class QrCodeUtil {
     }
 
     public static void main(String[] args) {
-        qrCodeCreate("Hello", 300, 300, "/Users/zhouqizhi/Desktop/q1.jpg", "jpg");
+        qrCodeCreate("Are you ok ?", 300, 300, "/Users/zhouqizhi/Desktop/q1.jpg", "jpg");
     }
 
 

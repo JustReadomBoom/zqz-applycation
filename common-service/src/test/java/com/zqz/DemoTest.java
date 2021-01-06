@@ -1,8 +1,12 @@
 package com.zqz;
 
+import com.alibaba.fastjson.JSON;
 import com.zqz.service.ServiceApplication;
+import com.zqz.service.aliyun.AliYunService;
 import com.zqz.service.entity.OrderRecord;
 import com.zqz.service.mapper.OrderRecordService;
+import com.zqz.service.model.UserBean;
+import com.zqz.service.utils.HttpUtil;
 import com.zqz.service.utils.RandomUtil;
 import com.zqz.service.utils.SeqUtil;
 import org.junit.Test;
@@ -11,12 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -28,6 +31,12 @@ import java.util.concurrent.*;
 @SpringBootTest(classes = {ServiceApplication.class})
 public class DemoTest {
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    private AliYunService aliYunService;
+
     private static final Logger log = LoggerFactory.getLogger(DemoTest.class);
 
     private ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 8, 200, TimeUnit.MILLISECONDS,
@@ -37,7 +46,6 @@ public class DemoTest {
 
     @Autowired
     private OrderRecordService orderRecordService;
-
 
     @Test
     public void testBatch() {
@@ -80,4 +88,54 @@ public class DemoTest {
             return list;
         }
     }
+
+    @Test
+    public void testSubmit(){
+        String url="http://localhost:7777/submit/test";
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
+
+        for(int i=0; i<10; i++){
+            executorService.submit(() -> {
+                try {
+                    countDownLatch.await();
+                    System.out.println("Thread:"+Thread.currentThread().getName()+", time:"+System.currentTimeMillis());
+
+                    UserBean bean = new UserBean();
+                    bean.setUserId(UUID.randomUUID().toString());
+                    Map<String, String> header = new HashMap<>();
+                    header.put("Content-Type", "application/json");
+                    header.put("Authorization", RandomUtil.createRandom(true, 12));
+
+                    String resp = HttpUtil.postJson(url, header, JSON.toJSONString(bean));
+
+                    System.out.println("RESP:"+Thread.currentThread().getName() + "," + resp);
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+
+        countDownLatch.countDown();
+    }
+
+    @Test
+    public void testRedis(){
+//        redisTemplate.opsForValue().set("myTestKey", 302.34);
+        String key = "myTestKey";
+        BigDecimal amt = new BigDecimal("20.64");
+        redisTemplate.opsForValue().set(key, 200);
+//        Long incr = redisTemplate.getConnectionFactory().getConnection().incrBy(redisTemplate.getStringSerializer().serialize(key), 10);
+        redisTemplate.opsForValue().increment(key, amt.setScale(0, BigDecimal.ROUND_HALF_UP).intValue());
+        System.out.println(redisTemplate.opsForValue().get(key));
+
+    }
+
+    @Test
+    public void testAliyun(){
+        String filePath = "/Users/zhouqizhi/Desktop/index.jpg";
+        aliYunService.uploadFile(filePath, "/demo");
+    }
+
 }

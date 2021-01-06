@@ -3,6 +3,7 @@ package com.zqz.service.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zqz.service.anno.NoRepeatSubmit;
+import com.zqz.service.locallock.LocalLock;
 import com.zqz.service.model.ApiResult;
 import com.zqz.service.model.UserBean;
 import com.zqz.service.utils.HttpUtil;
@@ -28,6 +29,7 @@ public class SubmitController {
     private static final Logger log = LoggerFactory.getLogger(SubmitController.class);
     private ExecutorService executorService = Executors.newFixedThreadPool(10);
 
+    //redis分布式锁放重复提交
     @PostMapping("test")
     @NoRepeatSubmit
     public ApiResult testSubmit(@RequestBody UserBean userBean) {
@@ -39,6 +41,7 @@ public class SubmitController {
         }
         return new ApiResult(200, "成功", userBean.getUserId());
     }
+
 
     @GetMapping("/test2")
     public String test2Submit(){
@@ -66,5 +69,13 @@ public class SubmitController {
             });
         }
         return "END";
+    }
+
+
+    //指定时间内防止重复提交
+    @LocalLock(key = "arg[0]")
+    @GetMapping("/test3")
+    public String test3Submit(@RequestParam("token") String token){
+        return "OK_" + token;
     }
 }

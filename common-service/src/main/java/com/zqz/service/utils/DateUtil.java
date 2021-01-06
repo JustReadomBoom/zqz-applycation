@@ -36,6 +36,13 @@ public class DateUtil {
         }
     };
 
+    private static ThreadLocal<SimpleDateFormat> format4 = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("yyyyMMddHHmmss");
+        }
+    };
+
 
     public static String getDateFormat1Str(Date date) {
         return format1.get().format(date);
@@ -47,6 +54,10 @@ public class DateUtil {
 
     public static String getDateFormat3Str(Date date) {
         return format3.get().format(date);
+    }
+
+    public static String getDateFormat4Str(Date date) {
+        return format4.get().format(date);
     }
 
     public static String getNowDate() {

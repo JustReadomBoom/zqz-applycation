@@ -73,8 +73,8 @@ public class SeqUtil {
                 @Override
                 public String call() throws Exception {
                     System.out.println("当前线程:>>>>> ".concat(Thread.currentThread().getName()));
-//                    return createShortSeq();
-                    return createLongSqp();
+                    return createShortSeq();
+//                    return createLongSqp();
                 }
             };
             task = new FutureTask<>(callable);

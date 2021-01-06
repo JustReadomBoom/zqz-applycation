@@ -1,5 +1,6 @@
 package com.zqz.service;
 
+import com.alibaba.nacos.spring.context.annotation.config.NacosPropertySource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +21,7 @@ import javax.sql.DataSource;
 @SpringBootApplication
 @ComponentScan(basePackages = {"com.zqz.service"})
 @EnableTransactionManagement
+@NacosPropertySource(dataId = "zhouqizhi", groupId = "ZQZ_TEST", autoRefreshed = true)
 public class ServiceApplication implements WebMvcConfigurer {
 
     @Bean
