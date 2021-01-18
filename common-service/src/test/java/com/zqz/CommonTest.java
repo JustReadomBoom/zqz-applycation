@@ -3,23 +3,26 @@ package com.zqz;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zqz.service.enums.KeyStoreTypeEnum;
+import com.zqz.service.lambda.Student;
+import com.zqz.service.model.UserInfo;
+import com.zqz.service.utils.FileUtil1;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.Assert;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
 import java.math.BigDecimal;
 import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * @Author: zqz
@@ -31,7 +34,7 @@ public class CommonTest {
 
 
     @Test
-    public void testMap(){
+    public void testMap() {
         Map<String, Object> map = new HashMap<>();
         map.put("name", "zqz");
         map.put("age", 20);
@@ -39,7 +42,7 @@ public class CommonTest {
 
         Set<Map.Entry<String, Object>> entrySet = map.entrySet();
         Iterator<Map.Entry<String, Object>> iterator = entrySet.iterator();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             Map.Entry<String, Object> next = iterator.next();
             String key = next.getKey();
             Object value = next.getValue();
@@ -47,7 +50,7 @@ public class CommonTest {
             System.out.println("value: " + value);
         }
 
-        for(Map.Entry<String, Object> entry : map.entrySet()){
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
             System.out.println("key: " + key);
@@ -57,7 +60,7 @@ public class CommonTest {
     }
 
     @Test
-    public void test2(){
+    public void test2() {
 //        BigDecimal amt = new BigDecimal("20.75");
 //        System.out.println(amt.intValue());
 //        System.out.println(amt.setScale(0, BigDecimal.ROUND_HALF_UP));
@@ -91,7 +94,7 @@ public class CommonTest {
 
 
     @Test
-    public void test3(){
+    public void test3() {
         String data = "123,345,789,222,908";
         String[] array = data.split(",");
         List<String> list = new ArrayList<>(data.length());
@@ -99,79 +102,134 @@ public class CommonTest {
         System.out.println(JSON.toJSONString(list));
     }
 
+
     @Test
-    public void test4(){
-        System.out.println(KeyStoreTypeEnum.PKCS12.getValue());
-
-    }
-
-    private static void readLine(BufferedReader br, Consumer<String> handle, boolean close) {
-        String s;
-        try {
-            while (((s = br.readLine()) != null)) {
-                handle.accept(s);
+    public void testThread() {
+        final Thread t1 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("This is t1 ... ");
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (close && br != null) {
+        });
+
+        final Thread t2 = new Thread(new Runnable() {
+            @Override
+            public void run() {
                 try {
-                    br.close();
-                } catch (IOException e) {
+                    t1.join();
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                System.out.println("This is t2 ... ");
             }
+        });
+
+        final Thread t3 = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    t2.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("This is t3 ... ");
+            }
+        });
+
+        t3.start();
+        t2.start();
+        t1.start();
+
+
+    }
+
+
+    class MyTestThread extends Thread {
+        volatile boolean stop = false;
+
+        @Override
+        public void run() {
+            while (!stop) {
+                System.out.println(getName() + " is running...");
+                try {
+                    sleep(1000);
+                } catch (InterruptedException e) {
+                    System.out.println("week up from block...");
+                    stop = true;
+                }
+            }
+            System.out.println(getName() + " is exiting...");
         }
     }
 
     @Test
-    public void testPubKey(){
-        String key = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0GQG3IH8i9xZmRhqBlkukXBg10ouZDZcAqKs4WlgTv8Z46JGmbkX9ZCTLIM347SVGBUXUE49d8P71djx2WL4jey8eWKkvyxy0/5gA6IJ6qLH5dpOxWyfxpJJGVYPlE2Xk3b2KB1UFE9XPABXym70ontDfTJJnD6MdR47bPIjLu3sK/F49ytX48arlUQd0W77JVb9Rkq9aYR7Jlag1I5db1FFUOFgO25QT5g8dWHjNdfUuEIqKzEJzMnZj3W6w+mHNSdrkXVFd8DHGZsL6l1gJ1sw+LgsiRSb0FPFLW+1nApma5j4NeBdAHhuqG4es/O2X++iUdI1VdwZUNYaVRa0bQIDAQAB";
-        String path = "/Users/zhouqizhi/my_doc/仁东资料/易宝支付/商户10033597080证书/公钥/2020052602.p7b";
-        PublicKey publicKey = readPublicKey(path);
-        System.out.println(publicKey);
+    public void testMyThread() throws InterruptedException {
+        MyTestThread m1 = new MyTestThread();
+        System.out.println("Starting thread...");
+        m1.start();
+        Thread.sleep(3000);
+        System.out.println("Interrupt thread..." + m1.getName());
+        m1.interrupt();
+        Thread.sleep(3000);
+        System.out.println("Stopping application...");
     }
 
 
-    public PublicKey readPublicKey(String cerFileName) {
+    @Test
+    public void testJson() {
+        UserInfo info = new UserInfo();
+        info.setName("zhouqizhi");
+        info.setAge(25);
+        info.setAmt(new BigDecimal(600000));
+        info.setEmail("88888@163.com");
+        List<String> list = new ArrayList<>();
+        list.add("9999");
+        list.add("7777");
+        list.add("3333");
+        info.setAddress(list);
 
-        CertificateFactory cf;
-        FileInputStream in;
-        Certificate c;
-        PublicKey pk = null;
-        try {
-            cf = CertificateFactory.getInstance("X.509");
-            in = new FileInputStream(cerFileName);
-            c = cf.generateCertificate(in);
-            pk = c.getPublicKey();
+        List<String> list2 = list.parallelStream().filter(s -> new BigDecimal(s).compareTo(new BigDecimal("6666")) > 0).collect(Collectors.toList());
+        System.out.println(list2);
 
-        } catch (CertificateException e) {
-
-            e.printStackTrace();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return pk;
     }
 
     @Test
-    public void testQry(){
-        Map<String, Object> result = new HashMap<>();
-        result.put("accountAmount", 85.58);
-        result.put("customerNumber", "10033597080");
-        result.put("errorCode", "BAC001");
-        result.put("rjtValidAmount", 0.00);
-        result.put("wtjsValidAmount", 86.39);
+    public void testRequest() throws Exception {
+        String path = "/Users/zhouqizhi/Desktop/未入数据库客户(1).xlsx";
+        String content = FileUtil1.readFileByLines(path);
+        System.out.println(content);
 
-        String errorcode = Optional.ofNullable(result.get("errorcode")).map(String::valueOf).orElse(null);
-        String errormsg = String.valueOf(result.get("errormsg"));
-        String errorCode = String.valueOf(result.get("errorCode"));
-        String errorMsg = String.valueOf(result.get("errorMsg"));
 
-        if (null != errorcode) {
-            log.info("=====易宝可用余额查询返回公共错误:[{}][{}]", errorcode, errormsg);
-        }
+    }
 
+
+    @Test
+    public void testCompletableFuture() throws InterruptedException {
+        //异步串行执行任务，下一个任务参数使用上一个任务的返回结果
+        CompletableFuture<Student> future1 = CompletableFuture.supplyAsync(() -> taskOne("Lebron james"));
+
+        CompletableFuture<Integer> future2 = future1.thenApplyAsync((this::taskTwo));
+
+        CompletableFuture<String> future3 = future2.thenApplyAsync(this::taskThree);
+
+        future3.thenAccept(System.out::println);
+
+        //主线程不要立刻结束，否则CompletableFuture默认使用的线程池会立刻关闭
+        Thread.sleep(200);
+    }
+
+
+
+    private Student taskOne(String name){
+        return new Student(name, "男", 36);
+    }
+
+    private Integer taskTwo(Student student){
+        return student.getAge();
+    }
+
+    private String taskThree(Integer age){
+        return "Age is " + age;
     }
 
 
