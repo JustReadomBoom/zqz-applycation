@@ -21,6 +21,7 @@ public class ProcessUserTask implements Runnable {
         User user = localQueue.get();
         if (null != user) {
             System.out.println("获取用户:" + user.toString());
+            System.out.println("剩余用户数量: " + localQueue.getCount());
         } else {
             System.out.println("无用户");
         }

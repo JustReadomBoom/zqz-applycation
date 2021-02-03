@@ -10,4 +10,6 @@ public interface OrderRecordMapper {
 
     int insertBatch(List<OrderRecord> list);
 
+    List<OrderRecord> selectByOrderId(String orderId);
+
 }

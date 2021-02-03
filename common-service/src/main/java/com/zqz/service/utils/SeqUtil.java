@@ -68,7 +68,7 @@ public class SeqUtil {
         Set<String> set = new HashSet<>();
         FutureTask<String> task;
         long startTime = System.currentTimeMillis();
-        for (int i = 0; i <1000; i++) {
+        for (int i = 0; i <1000000; i++) {
             Callable<String> callable = new Callable<String>() {
                 @Override
                 public String call() throws Exception {

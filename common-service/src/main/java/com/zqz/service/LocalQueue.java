@@ -33,4 +33,13 @@ public class LocalQueue {
         }
         return null;
     }
+
+    public Integer getCount(){
+        try{
+            return queue.size();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

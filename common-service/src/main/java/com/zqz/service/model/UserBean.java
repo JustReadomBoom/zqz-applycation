@@ -1,19 +1,18 @@
 package com.zqz.service.model;
 
+import lombok.Data;
+
 /**
  * @Author: zqz
  * @Description:
  * @Date: Created in 10:27 2020/10/23
  */
+@Data
 public class UserBean {
 
     private String userId;
 
-    public String getUserId() {
-        return userId;
-    }
+    private String requestNo;
 
-    public void setUserId(String userId) {
-        this.userId = userId == null ? null : userId.trim();
-    }
+    private String userName;
 }

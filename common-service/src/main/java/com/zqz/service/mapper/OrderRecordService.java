@@ -19,4 +19,8 @@ public class OrderRecordService {
     public int insertBatch(List<OrderRecord> records){
         return mapper.insertBatch(records);
     }
+
+    public List<OrderRecord> selectByOrderId(String orderId){
+        return mapper.selectByOrderId(orderId);
+    }
 }
