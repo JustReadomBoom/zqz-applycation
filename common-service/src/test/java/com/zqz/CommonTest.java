@@ -2,6 +2,7 @@ package com.zqz;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.jcraft.jsch.SftpATTRS;
 import com.zqz.service.enums.KeyStoreTypeEnum;
 import com.zqz.service.lambda.Student;
 import com.zqz.service.model.UserInfo;
@@ -11,6 +12,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
@@ -19,6 +21,8 @@ import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
@@ -230,6 +234,35 @@ public class CommonTest {
 
     private String taskThree(Integer age){
         return "Age is " + age;
+    }
+
+
+    @Test
+    public void testLocalDateTime(){
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String format = now.format(formatter);
+        System.out.println(format);
+
+        Student s = null;
+        Set<Integer> list = new HashSet<>();
+        list.add(1);
+        list.add(2);
+        list.add(3);
+        list.add(4);
+        list.add(5);
+        list.add(6);
+        list.add(7);
+        list.add(8);
+        list.add(9);
+        list.add(10);
+        list.add(11);
+        list.forEach(e -> {
+            System.out.println(e.hashCode());
+        });
+
+
+
     }
 
 
