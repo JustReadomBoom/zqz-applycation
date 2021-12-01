@@ -4,9 +4,13 @@ import com.zqz.service.valid.ParamValidException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @Author: zqz
@@ -55,6 +59,15 @@ public class GlobalExceptionHandler {
         String errorMsg = String.format("参数错误[%s]", e.getLocalizedMessage());
         log.error(errorMsg);
         return new ResultBean(HttpStatus.BAD_REQUEST, errorMsg);
+    }
+
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map handlerExp(MethodArgumentNotValidException e){
+        Map<String, String> map = new HashMap<>(2);
+        map.put("message", e.getBindingResult().getFieldError().getDefaultMessage());
+        map.put("code", "500");
+        return map;
     }
 
 }
