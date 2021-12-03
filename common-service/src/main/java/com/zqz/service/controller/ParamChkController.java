@@ -1,6 +1,8 @@
 package com.zqz.service.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.zqz.service.bean.CommonReq;
+import com.zqz.service.bean.TestParamReq;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

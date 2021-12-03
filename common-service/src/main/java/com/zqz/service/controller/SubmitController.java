@@ -8,6 +8,8 @@ import com.zqz.service.model.ApiResult;
 import com.zqz.service.model.UserBean;
 import com.zqz.service.utils.HttpUtil;
 import com.zqz.service.utils.RandomUtil;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -44,12 +46,12 @@ public class SubmitController {
 
 
     @GetMapping("/test2")
-    public String test2Submit(){
-        String url="http://localhost:7777/submit/test";
-        for(int i=0; i<200; i++){
+    public String test2Submit() {
+        String url = "http://localhost:7777/submit/test";
+        for (int i = 0; i < 200; i++) {
             executorService.submit(() -> {
                 try {
-                    System.out.println("Thread:"+Thread.currentThread().getName()+", time:"+System.currentTimeMillis());
+                    System.out.println("Thread:" + Thread.currentThread().getName() + ", time:" + System.currentTimeMillis());
 
                     UserBean bean = new UserBean();
                     bean.setUserId(UUID.randomUUID().toString());
@@ -60,7 +62,7 @@ public class SubmitController {
                     String resp = HttpUtil.postJson(url, header, JSON.toJSONString(bean));
                     log.info("线程:[{}]-测试响应结果:[{}]", Thread.currentThread().getName(), resp);
                     ApiResult apiResult = JSON.toJavaObject(JSON.parseObject(resp), ApiResult.class);
-                    if("成功".equals(apiResult.getMessage())){
+                    if ("成功".equals(apiResult.getMessage())) {
                         log.info(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>成功处理请求<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
                     }
                 } catch (Exception e) {
@@ -75,7 +77,18 @@ public class SubmitController {
     //指定时间内防止重复提交
     @LocalLock(key = "arg[0]")
     @GetMapping("/test3")
-    public String test3Submit(@RequestParam("token") String token){
+    public String test3Submit(@RequestParam("token") String token) {
         return "OK_" + token;
+    }
+
+
+    @GetMapping("/test4")
+    public Object test4Submit() {
+        String url = "http://ashow.i.yce21.cn/cams/home/resource/detail?id=210451&courseId=301794069";
+        for (int i = 0; i < 20; i++) {
+            String resp = HttpUtil.sendGet(url);
+            System.out.println(resp);
+        }
+        return "ok";
     }
 }

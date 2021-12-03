@@ -1,7 +1,7 @@
 package com.zqz.service.controller;
 
 import com.zqz.service.LocalQueue;
-import com.zqz.service.User;
+import com.zqz.service.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

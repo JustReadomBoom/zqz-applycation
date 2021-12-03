@@ -24,11 +24,13 @@ public class ProcessUserHandler implements InitializingBean, DisposableBean {
 
     private ScheduledExecutorService executor = new ScheduledThreadPoolExecutor(1, new ThreadPoolExecutor.DiscardOldestPolicy());
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         executor.scheduleWithFixedDelay(new ProcessUserTask(queue), 1, 100, TimeUnit.SECONDS);
     }
 
 
+    @Override
     public void destroy() throws Exception {
         System.out.println("ProcessUserHandler------>销毁");
         executor.shutdown();

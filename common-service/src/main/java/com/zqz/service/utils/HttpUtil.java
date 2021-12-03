@@ -1,6 +1,13 @@
 package com.zqz.service.utils;
 
 import okhttp3.*;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -9,9 +16,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.SecureRandom;
@@ -140,10 +145,89 @@ public class HttpUtil {
             String str = br.readLine();
             log.info(">>>>>>发送http-post请求返回:[{}]", str);
             return str;
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(">>>>>>发送http-post请求异常:[{}]", e.getMessage(), e);
             return null;
         }
+    }
+
+
+    public static HttpResponse get(String url) throws Exception {
+        HttpParams myParams = new BasicHttpParams();
+        HttpConnectionParams.setConnectionTimeout(myParams, 20 * 1000);
+        HttpConnectionParams.setSoTimeout(myParams, 300 * 1000);
+        DefaultHttpClient client = new DefaultHttpClient(myParams);
+        HttpResponse response = null;
+        try {
+            HttpGet get = new HttpGet(url);
+            response = client.execute(get);
+            if (response.getStatusLine().getStatusCode() == 200) {
+                log.debug("====http get url[{}] success====", url);
+            } else {
+                log.error("====返回状态错误:\n{}====", response.toString());
+                throw new Exception("http get请求失败");
+            }
+        } catch (UnsupportedEncodingException e) {
+            log.error("请求外部服务[{}]失败", url);
+            log.error("ERROR", e);
+            throw e;
+        } catch (ClientProtocolException e) {
+            log.error("请求外部服务[{}]失败", url);
+            log.error("ERROR", e);
+            throw e;
+        } catch (Exception e) {
+            log.error("请求外部服务[{}]失败", url);
+            log.error("ERROR", e);
+            throw e;
+        } finally {
+            client.getConnectionManager().shutdown();
+            return response;
+        }
+    }
+
+
+    public static String sendGet(String url) {
+        StringBuffer result = new StringBuffer();
+        BufferedReader in = null;
+        try {
+            URL realURL = new URL(url);
+            HttpURLConnection conn = (HttpURLConnection) realURL.openConnection();
+            conn.setConnectTimeout(10000);
+            conn.setReadTimeout(10000);
+            conn.setRequestProperty("accept", "*/*");
+            conn.setRequestProperty("connection", "close");
+            conn.setRequestProperty("user-agent",
+                    "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36");
+            conn.connect();
+            if (conn.getResponseCode() == 200) {
+                in = new BufferedReader(
+                        new InputStreamReader(conn.getInputStream(), "utf-8"));
+                String line = null;
+                while ((line = in.readLine()) != null) {
+                    result.append(line);
+                }
+            }else {
+                in = new BufferedReader(
+                        new InputStreamReader(conn.getErrorStream(), "utf-8"));
+                String line = null;
+                while ((line = in.readLine()) != null) {
+                    System.out.println(line);
+                }
+                return null;
+            }
+        } catch (IOException e) {
+            log.error("Send Get Request Error:{}", e.getMessage(), e);
+            return null;
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return result.toString();
     }
 
 }

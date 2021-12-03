@@ -25,14 +25,16 @@ public class BatchService {
     @Autowired
     private OrderRecordService orderRecordService;
 
-    private List<OrderRecord> dataList = new ArrayList<>(1000000);
+    private static final Integer CAPACITY = 1000000;
 
-    private ExecutorService pool = new ThreadPoolExecutor(
-            2,
+    private List<OrderRecord> dataList = new ArrayList<>(CAPACITY);
+
+    private ThreadPoolExecutor pool = new ThreadPoolExecutor(
+            3,
             Runtime.getRuntime().availableProcessors(),
             2L,
             TimeUnit.SECONDS,
-            new LinkedBlockingQueue<>(3),
+            new LinkedBlockingQueue<>(5),
             Executors.defaultThreadFactory(),
             new ThreadPoolExecutor.CallerRunsPolicy());
 
@@ -49,7 +51,7 @@ public class BatchService {
     }
 
     private void createData() {
-        for (int i = 0; i < 1000000; i++) {
+        for (int i = 0; i < CAPACITY; i++) {
             OrderRecord r = new OrderRecord();
             r.setOrderId(SeqUtil.createShortSeq());
             r.setName(RandomUtil.getRandomString(10));

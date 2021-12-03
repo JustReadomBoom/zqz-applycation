@@ -1,5 +1,6 @@
 package com.zqz.service;
 
+import com.zqz.service.entity.User;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.LinkedBlockingQueue;

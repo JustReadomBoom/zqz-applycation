@@ -1,4 +1,4 @@
-package com.zqz.service.controller;
+package com.zqz.service.bean;
 
 import lombok.Data;
 

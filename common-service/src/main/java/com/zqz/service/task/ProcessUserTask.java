@@ -1,7 +1,7 @@
 package com.zqz.service.task;
 
 import com.zqz.service.LocalQueue;
-import com.zqz.service.User;
+import com.zqz.service.entity.User;
 
 /**
  * @Author: zqz
@@ -16,6 +16,7 @@ public class ProcessUserTask implements Runnable {
         this.localQueue = localQueue;
     }
 
+    @Override
     public void run() {
         System.out.println("=====================");
         User user = localQueue.get();

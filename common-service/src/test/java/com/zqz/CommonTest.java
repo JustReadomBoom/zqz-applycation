@@ -7,7 +7,9 @@ import com.zqz.service.enums.KeyStoreTypeEnum;
 import com.zqz.service.lambda.Student;
 import com.zqz.service.model.UserInfo;
 import com.zqz.service.utils.FileUtil1;
+import com.zqz.service.utils.SeqUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -223,22 +225,21 @@ public class CommonTest {
     }
 
 
-
-    private Student taskOne(String name){
+    private Student taskOne(String name) {
         return new Student(name, "男", 36);
     }
 
-    private Integer taskTwo(Student student){
+    private Integer taskTwo(Student student) {
         return student.getAge();
     }
 
-    private String taskThree(Integer age){
+    private String taskThree(Integer age) {
         return "Age is " + age;
     }
 
 
     @Test
-    public void testLocalDateTime(){
+    public void testLocalDateTime() {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String format = now.format(formatter);
@@ -262,7 +263,39 @@ public class CommonTest {
         });
 
 
+    }
 
+    @Test
+    public void test4() {
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(
+                2,
+                5,
+                Runtime.getRuntime().availableProcessors(),
+                TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(50),
+                Executors.defaultThreadFactory(),
+                new ThreadPoolExecutor.CallerRunsPolicy());
+        for (int i = 0; i < 100; i++) {
+            executor.submit(new MyTest4Task());
+        }
+
+
+    }
+
+    class MyTest4Task implements Runnable {
+
+        @Override
+        public void run() {
+            String name = SeqUtil.createShortSeq();
+            System.out.println("thread=" + Thread.currentThread().getName() + " ,name=" + name);
+        }
+    }
+
+
+    @Test
+    public void test5() {
+        int i = RandomUtils.nextInt(1, 5);
+        System.out.println(i);
     }
 
 

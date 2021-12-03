@@ -15,10 +15,10 @@ import java.util.concurrent.*;
  */
 @Slf4j
 public class BatchInsertTask implements Callable<Boolean> {
-    private static final int batch100 = 100;
+    private static final int BATCH100 = 100;
     private List<OrderRecord> recordList;
     private OrderRecordService orderRecordService;
-    private ThreadPoolExecutor pool = new ThreadPoolExecutor(
+    private ThreadPoolExecutor POOL = new ThreadPoolExecutor(
             2,
             Runtime.getRuntime().availableProcessors(),
             2L,
@@ -50,7 +50,7 @@ public class BatchInsertTask implements Callable<Boolean> {
         log.info("==========batchOp-我是线程:{}", Thread.currentThread().getName());
         if (!list.isEmpty()) {
             int size = list.size();
-            if (size <= batch100) {
+            if (size <= BATCH100) {
                 orderRecordService.insertBatch(list);
             } else {
                 batchOpSplit(list);
@@ -64,7 +64,7 @@ public class BatchInsertTask implements Callable<Boolean> {
         List<List<OrderRecord>> pList = pagingList(list);
         try {
             for (List<OrderRecord> fList : pList) {
-                pool.execute(() -> {
+                POOL.execute(() -> {
                     log.info("==========batchOpSplit-我是线程:{}", Thread.currentThread().getName());
                     batchOp(fList);
                 });
@@ -73,7 +73,7 @@ public class BatchInsertTask implements Callable<Boolean> {
             log.error("batchOpSplit error:{}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage());
         } finally {
-            pool.shutdown();
+            POOL.shutdown();
             Long t2 = System.currentTimeMillis();
             log.info("=========执行完成,用时:{}", t2 - t1);
         }
@@ -81,7 +81,7 @@ public class BatchInsertTask implements Callable<Boolean> {
     }
 
     private static <T> List<List<T>> pagingList(List<T> list) {
-        int pageSize = batch100;
+        int pageSize = BATCH100;
         int length = list.size();
         int num = (length + pageSize - 1) / pageSize;
         List<List<T>> newList = new ArrayList<>();
