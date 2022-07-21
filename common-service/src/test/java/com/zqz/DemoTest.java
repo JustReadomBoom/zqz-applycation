@@ -1,6 +1,13 @@
 package com.zqz;
 
 import com.alibaba.fastjson.JSON;
+import com.influxdb.client.InfluxDBClient;
+import com.influxdb.client.InfluxDBClientFactory;
+import com.influxdb.client.WriteApiBlocking;
+import com.influxdb.client.domain.WritePrecision;
+import com.influxdb.client.write.Point;
+import com.influxdb.query.FluxRecord;
+import com.influxdb.query.FluxTable;
 import com.zqz.service.ServiceApplication;
 import com.zqz.service.aliyun.AliYunService;
 import com.zqz.service.entity.OrderRecord;
@@ -17,8 +24,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -90,16 +101,16 @@ public class DemoTest {
     }
 
     @Test
-    public void testSubmit(){
-        String url="http://localhost:7777/submit/test";
+    public void testSubmit() {
+        String url = "http://localhost:7777/submit/test";
         CountDownLatch countDownLatch = new CountDownLatch(1);
         ExecutorService executorService = Executors.newFixedThreadPool(10);
 
-        for(int i=0; i<10; i++){
+        for (int i = 0; i < 10; i++) {
             executorService.submit(() -> {
                 try {
                     countDownLatch.await();
-                    System.out.println("Thread:"+Thread.currentThread().getName()+", time:"+System.currentTimeMillis());
+                    System.out.println("Thread:" + Thread.currentThread().getName() + ", time:" + System.currentTimeMillis());
 
                     UserBean bean = new UserBean();
                     bean.setUserId(UUID.randomUUID().toString());
@@ -109,7 +120,7 @@ public class DemoTest {
 
                     String resp = HttpUtil.postJson(url, header, JSON.toJSONString(bean));
 
-                    System.out.println("RESP:"+Thread.currentThread().getName() + "," + resp);
+                    System.out.println("RESP:" + Thread.currentThread().getName() + "," + resp);
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -121,7 +132,7 @@ public class DemoTest {
     }
 
     @Test
-    public void testRedis(){
+    public void testRedis() {
 //        redisTemplate.opsForValue().set("myTestKey", 302.34);
         String key = "myTestKey";
         BigDecimal amt = new BigDecimal("20.64");
@@ -133,9 +144,44 @@ public class DemoTest {
     }
 
     @Test
-    public void testAliyun(){
+    public void testAliyun() {
         String filePath = "/Users/zhouqizhi/Desktop/index.jpg";
         aliYunService.uploadFile(filePath, "/demo");
+    }
+
+
+    @Test
+    public void testInfluxDb() {
+        String token = "wllPhoKuUjB40R0hOyIAxOw54vg1G4gDfyj1jmMt9i7sdVkCN9V1-ByVimdz6VMlx9MmXn88jcZeRGu6QCkEBQ==";
+        String bucket = "test";
+        String org = "forever";
+        InfluxDBClient client = InfluxDBClientFactory.create("http://localhost:8086", token.toCharArray());
+
+        Point point = Point
+                .measurement("ZQZ_TEST")
+                .addTag("name", "ZQZ")
+                .addTag("age", "29")
+                .addField("phoneType", "xsmax")
+                .addField("addressDetail", "宜昌市伍家岗")
+                .time(Instant.now(), WritePrecision.NS);
+        WriteApiBlocking writeApi = client.getWriteApiBlocking();
+        writeApi.writePoint(bucket, org, point);
+    }
+
+    @Test
+    public void testQueryInfluxDB() {
+        String org = "forever";
+        String token = "wllPhoKuUjB40R0hOyIAxOw54vg1G4gDfyj1jmMt9i7sdVkCN9V1-ByVimdz6VMlx9MmXn88jcZeRGu6QCkEBQ==";
+        InfluxDBClient client = InfluxDBClientFactory.create("http://localhost:8086", token.toCharArray());
+        String query = "from(bucket:\"test\") |> range(start: 0) |> filter(fn: (r) => r._measurement == \"prescription\" and r._field == \"count\")";
+
+        List<FluxTable> tables = client.getQueryApi().query(query, org);
+
+        for (FluxTable table : tables) {
+            for (FluxRecord record : table.getRecords()) {
+                System.out.println("record = " + record.getValue());
+            }
+        }
     }
 
 }
