@@ -50,8 +50,9 @@ public class QrCodeUtil {
             }
             File outPutImage = new File(outPutPath);
             //如果图片不存在创建图片
-            if(!outPutImage.exists())
+            if(!outPutImage.exists()) {
                 outPutImage.createNewFile();
+            }
             //5、将二维码写入图片
             ImageIO.write(image, imageType, outPutImage);
         } catch (WriterException e) {
@@ -62,7 +63,14 @@ public class QrCodeUtil {
     }
 
     public static void main(String[] args) {
-        qrCodeCreate("Are you ok ?", 300, 300, "/Users/zhouqizhi/Desktop/q1.jpg", "jpg");
+        qrCodeCreate("{\n" +
+                "    code: 0,\n" +
+                "    msg: \"药房支付信息回传成功\",\n" +
+                "    data: {\n" +
+                "        orderId: \"药房订单ID\",\n" +
+                "        payOrderId: \"支付订单ID\"\n" +
+                "    }\n" +
+                "  }", 300, 300, "E:\\img\\q1.jpg", "jpg");
     }
 
 

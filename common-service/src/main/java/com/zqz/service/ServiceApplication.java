@@ -18,7 +18,7 @@ import javax.sql.DataSource;
  * @Description:
  * @Date: Created in 2:30 PM 2020/7/17
  */
-@SpringBootApplication
+
 @ComponentScan(basePackages = {"com.zqz.service"})
 @EnableTransactionManagement
 @NacosPropertySource(dataId = "zhouqizhi", groupId = "ZQZ_TEST", autoRefreshed = true)

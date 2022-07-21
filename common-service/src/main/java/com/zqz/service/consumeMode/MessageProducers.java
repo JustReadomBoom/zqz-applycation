@@ -60,7 +60,7 @@ public class MessageProducers implements InitializingBean, DisposableBean {
 
 
     @Override
-    public void destroy() throws Exception {
+        public void destroy() throws Exception {
         log.info("MessageConsumer shutdown ...");
         boolean flag = true;
         while (flag) {

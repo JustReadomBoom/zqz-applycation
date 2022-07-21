@@ -89,7 +89,7 @@ public class LocalDateTimeUtil {
     }
 
     public static void main(String[] args) {
-        LocalDateTime minu = minu(LocalDateTime.now(), 3, ChronoUnit.DAYS);
+        LocalDateTime minu = minu(LocalDateTime.now(), -3, ChronoUnit.DAYS);
         System.out.println(formatTime(minu, "yyyy-MM-dd HH:mm:ss"));
 
         System.out.println(minu.isEqual(LocalDateTime.now()));

@@ -1,8 +1,11 @@
 package com.zqz.service.controller;
 
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.zqz.service.entity.OrderRecord;
+import com.zqz.service.entity.User;
 import com.zqz.service.mapper.OrderRecordService;
 import com.zqz.service.model.ApiResult;
 import com.zqz.service.model.UserBean;
@@ -175,4 +178,14 @@ public class TestController {
         }
         return "END";
     }
+
+
+    @PostMapping("/WebService_WLPT.asmx")
+    public Object testWebService() {
+        System.out.println("123456789");
+
+
+        return "SUCCESS";
+    }
+
 }

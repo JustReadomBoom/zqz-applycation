@@ -1,5 +1,7 @@
 package com.zqz.service.utils;
 
+import com.zqz.service.sign.Base64Utils;
+
 import javax.crypto.Cipher;
 import java.io.ByteArrayOutputStream;
 import java.security.*;
@@ -273,52 +275,23 @@ public class RSAUtil {
             String privateKey = getPrivateKey(keyMap);
             System.out.println("privateKey: ");
             System.out.println(privateKey);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        System.out.println("-----------------------------------------");
-        Map<String, Object> keyMapA;
-        Map<String, Object> keyMapB;
-        try {
-            keyMapA = initKey();
-            keyMapB = initKey();
-            System.out.println(keyMapA.equals(keyMapB));
 
-            String ApublicKey = getPublicKey(keyMapA);
-            String BpublicKey = getPublicKey(keyMapB);
-            String AprivateKey = getPrivateKey(keyMapA);
-            String BprivateKey = getPrivateKey(keyMapB);
-            System.out.println("-------------");
-            System.out.println("ApublicKey:" + ApublicKey);
-            System.out.println("AprivateKey:" + AprivateKey);
-            System.out.println("-------------");
-            System.out.println("BpublicKey:" + BpublicKey);
-            System.out.println("BprivateKey:" + BprivateKey);
-            System.out.println("----------------------------------------");
-
-            String source1 = "这个表要要加密的内容，我们现在开始处理。";
-            System.out.println("加密前文字：\n" + source1);
-            byte[] data1 = source1.getBytes();
-            byte[] encodedData1 = encryptByPublicKey(data1, ApublicKey);
-            System.out.println("加密后文字：\n" + new String(encodedData1));
-            byte[] decodedData1 = decryptByPrivateKey(encodedData1, AprivateKey);
-            String target1 = new String(decodedData1);
-            System.out.println("解密后文字: \n" + target1);
-
-            String source2 = "这个表要要加密的内容，我们现在开始处理，用B的私钥进行加密，然后得取字符串，发给A，A收到加密字符串后，利用B的公钥进行解密。";
-            System.out.println("原文字：\n" + source2);
+            String source2 = "这个表要要加密的内容，我们现在开始处理，用私钥进行加密，然后得取字符串，公钥进行解密。";
+            System.out.println("原明文：\n" + source2);
             byte[] data2 = source2.getBytes();
-            byte[] encodedData2 = encryptByPrivateKey(data2, BprivateKey);
-            System.out.println("加密后：\n" + new String(encodedData2));
-            byte[] decodedData2 = decryptByPublicKey(encodedData2, BpublicKey);
-            String target2 = new String(decodedData2);
-            System.out.println("解密后: \n" + target2);
-            System.out.println("私钥签名——公钥验证签名");
-            String sign2 = sign(encodedData2, BprivateKey);
-            System.out.println("签名: \n" + sign2);
-            boolean status2 = verify(encodedData2, BpublicKey, sign2);
-            System.out.println("验证结果: \n" + status2);
+
+            //加密
+            byte[] encodedData = encryptByPrivateKey(data2, privateKey);
+            String encode = Base64Utils.encode(encodedData);
+            System.out.println("密文：\n" + encode);
+
+            //解密
+            byte[] decode = Base64Utils.decode(encode);
+
+            byte[] decodedData2 = decryptByPublicKey(decode, publicKey);
+            System.out.println("明文：\n" + new String(decodedData2));
+
 
         } catch (Exception e) {
             e.printStackTrace();
