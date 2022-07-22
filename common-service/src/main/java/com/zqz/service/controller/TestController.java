@@ -1,11 +1,7 @@
 package com.zqz.service.controller;
 
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.zqz.service.entity.OrderRecord;
-import com.zqz.service.entity.User;
 import com.zqz.service.mapper.OrderRecordService;
 import com.zqz.service.model.ApiResult;
 import com.zqz.service.model.UserBean;
@@ -38,18 +34,6 @@ public class TestController {
     private Map<String, Object> lock = new Hashtable<>();
     @Autowired
     private RedisLock redisLock;
-
-    @NacosValue(value = "${configName:ZQZ}", autoRefreshed = true)
-    private String configName;
-
-
-    @NacosValue(value = "${configTest:ZQZ}", autoRefreshed = true)
-    private String configTest;
-
-    @GetMapping("/config")
-    public String testConfig() {
-        return configTest;
-    }
 
     /**
      * @Author: zqz

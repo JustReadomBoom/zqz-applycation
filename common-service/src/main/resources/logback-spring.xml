@@ -11,10 +11,10 @@
 
     <appender name="Application" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!--<file>/data/logs/sign/sign-web.log</file>-->
-        <file>/Users/zhouqizhi/logs/sign/sign-web.log</file>
+        <file>D:\my_project\log\zqz-application\zqz-service.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!--<FileNamePattern>/data/logs/sign/sign-web.%d{yyyy-MM-dd}.log</FileNamePattern>-->
-            <FileNamePattern>/Users/zhouqizhi/logs/sign/sign-web.%d{yyyy-MM-dd}.log</FileNamePattern>
+            <FileNamePattern>D:\my_project\log\zqz-application\zqz-web.%d{yyyy-MM-dd}.log</FileNamePattern>
             <maxHistory>15</maxHistory>
         </rollingPolicy>
         <append>true</append>
@@ -23,8 +23,14 @@
         </layout>
     </appender>
 
-    <logger name="com.zqz.service" additivity="false">
+    <logger name="com.zqz.service" additivity="true">
         <level value="debug"/>
+        <appender-ref ref="Application"/>
+        <appender-ref ref="Console"/>
+    </logger>
+
+    <logger name="com.zqz.service" additivity="true">
+        <level value="info"/>
         <appender-ref ref="Application"/>
         <appender-ref ref="Console"/>
     </logger>
