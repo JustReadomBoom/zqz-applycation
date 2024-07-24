@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zqz.service.mapper.LoanDetailMapper">
+    <resultMap id="BaseResultMap" type="com.zqz.service.entity.LoanDetail">
+            <id column="id" property="id" jdbcType="INTEGER" />
+            <result column="month_id" property="monthId" jdbcType="INTEGER" />
+            <result column="year_num" property="yearNum" jdbcType="INTEGER" />
+            <result column="business_loan_amount" property="businessLoanAmount" jdbcType="DECIMAL" />
+            <result column="reserved_loan_amount" property="reservedLoanAmount" jdbcType="DECIMAL" />
+            <result column="business_equal_interest_rate" property="businessEqualInterestRate" jdbcType="DECIMAL" />
+            <result column="business_equal_interest_principal" property="businessEqualInterestPrincipal" jdbcType="DECIMAL" />
+            <result column="business_equal_interest_interest" property="businessEqualInterestInterest" jdbcType="DECIMAL" />
+            <result column="business_equal_interest_total" property="businessEqualInterestTotal" jdbcType="DECIMAL" />
+            <result column="business_equal_principal_rate" property="businessEqualPrincipalRate" jdbcType="DECIMAL" />
+            <result column="business_equal_principal_principal" property="businessEqualPrincipalPrincipal" jdbcType="DECIMAL" />
+            <result column="business_equal_principal_interest" property="businessEqualPrincipalInterest" jdbcType="DECIMAL" />
+            <result column="business_equal_principal_total" property="businessEqualPrincipalTotal" jdbcType="DECIMAL" />
+            <result column="reserved_equal_interest_rate" property="reservedEqualInterestRate" jdbcType="DECIMAL" />
+            <result column="reserved_equal_interest_principal" property="reservedEqualInterestPrincipal" jdbcType="DECIMAL" />
+            <result column="reserved_equal_interest_interest" property="reservedEqualInterestInterest" jdbcType="DECIMAL" />
+            <result column="reserved_equal_interest_total" property="reservedEqualInterestTotal" jdbcType="DECIMAL" />
+            <result column="reserved_equal_principal_rate" property="reservedEqualPrincipalRate" jdbcType="DECIMAL" />
+            <result column="reserved_equal_principal_principal" property="reservedEqualPrincipalPrincipal" jdbcType="DECIMAL" />
+            <result column="reserved_equal_principal_interest" property="reservedEqualPrincipalInterest" jdbcType="DECIMAL" />
+            <result column="reserved_equal_principal_total" property="reservedEqualPrincipalTotal" jdbcType="DECIMAL" />
+            <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, month_id, year_num, business_loan_amount, reserved_loan_amount, business_equal_interest_rate,
+        business_equal_interest_principal, business_equal_interest_interest, business_equal_interest_total,
+        business_equal_principal_rate, business_equal_principal_principal, business_equal_principal_interest,
+        business_equal_principal_total, reserved_equal_interest_rate, reserved_equal_interest_principal,
+        reserved_equal_interest_interest, reserved_equal_interest_total, reserved_equal_principal_rate,
+        reserved_equal_principal_principal, reserved_equal_principal_interest, reserved_equal_principal_total,
+        create_time
+    </sql>
+
+    <!-- 批量插入数据 -->
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into loan_detail (month_id, year_num,
+        business_loan_amount, reserved_loan_amount,
+        business_equal_interest_rate, business_equal_interest_principal,
+        business_equal_interest_interest, business_equal_interest_total,
+        business_equal_principal_rate, business_equal_principal_principal,
+        business_equal_principal_interest, business_equal_principal_total,
+        reserved_equal_interest_rate, reserved_equal_interest_principal,
+        reserved_equal_interest_interest, reserved_equal_interest_total,
+        reserved_equal_principal_rate, reserved_equal_principal_principal,
+        reserved_equal_principal_interest, reserved_equal_principal_total)
+        values
+        <foreach collection="list" item="detail" index="index" separator=",">
+            (#{detail.monthId}, #{detail.yearNum},
+            #{detail.businessLoanAmount}, #{detail.reservedLoanAmount},
+            #{detail.businessEqualInterestRate}, #{detail.businessEqualInterestPrincipal},
+            #{detail.businessEqualInterestInterest}, #{detail.businessEqualInterestTotal},
+            #{detail.businessEqualPrincipalRate}, #{detail.businessEqualPrincipalPrincipal},
+            #{detail.businessEqualPrincipalInterest}, #{detail.businessEqualPrincipalTotal},
+            #{detail.reservedEqualInterestRate}, #{detail.reservedEqualInterestPrincipal},
+            #{detail.reservedEqualInterestInterest}, #{detail.reservedEqualInterestTotal},
+            #{detail.reservedEqualPrincipalRate}, #{detail.reservedEqualPrincipalPrincipal},
+            #{detail.reservedEqualPrincipalInterest}, #{detail.reservedEqualPrincipalTotal})
+        </foreach>
+    </insert>
+
+
+</mapper>
