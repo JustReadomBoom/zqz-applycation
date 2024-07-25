@@ -25,8 +25,22 @@ public class ParamChkController {
 
 
     @PostMapping("/test/one")
-    public String testOne(@Valid @RequestBody CommonReq<TestParamReq> req){
+    public String testOne(@Valid @RequestBody TestParamReq req) {
         log.info("req:[{}]", JSON.toJSONString(req));
-        return "OK";
+        boolean integer = isInteger(String.valueOf(req.getAmount()));
+        if (integer) {
+            return "OK";
+        } else {
+            return "NOT INTEGER";
+        }
+    }
+
+    public static boolean isInteger(String input) {
+        try {
+            Integer.parseInt(input);
+            return true;
+        } catch(NumberFormatException e) {
+            return false;
+        }
     }
 }

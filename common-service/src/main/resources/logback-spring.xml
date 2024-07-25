@@ -34,10 +34,4 @@
         <appender-ref ref="Application"/>
         <appender-ref ref="Console"/>
     </logger>
-
-    <root>
-        <level value="info"/>
-        <appender-ref ref="Application"/>
-        <appender-ref ref="Console"/>
-    </root>
 </configuration>

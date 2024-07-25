@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.validation.constraints.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * @Author: zqz
@@ -22,4 +23,8 @@ public class TestParamReq implements Serializable {
     @Min(value = 20, message = "age不能小于20")
     @Max(value = 50, message = "age不能大于50")
     private Integer age;
+
+
+    @NotNull(message = "amount不能为空")
+    private BigDecimal amount;
 }

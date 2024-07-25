@@ -11,6 +11,7 @@ import com.influxdb.query.FluxTable;
 import com.zqz.service.ServiceApplication;
 import com.zqz.service.aliyun.AliYunService;
 import com.zqz.service.entity.OrderRecord;
+import com.zqz.service.houseLoan.LoanDetailService;
 import com.zqz.service.mapper.OrderRecordService;
 import com.zqz.service.model.UserBean;
 import com.zqz.service.utils.HttpUtil;
@@ -47,6 +48,9 @@ public class DemoTest {
 
     @Autowired
     private AliYunService aliYunService;
+
+    @Autowired
+    private LoanDetailService loanDetailService;
 
     private static final Logger log = LoggerFactory.getLogger(DemoTest.class);
 
@@ -182,6 +186,11 @@ public class DemoTest {
                 System.out.println("record = " + record.getValue());
             }
         }
+    }
+
+    @Test
+    public void testLoanDetail() {
+        loanDetailService.calculate();
     }
 
 }
